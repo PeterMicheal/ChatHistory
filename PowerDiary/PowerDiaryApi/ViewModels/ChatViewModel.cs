@@ -2,29 +2,29 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.Serialization;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
 namespace PowerDiaryApi.ViewModels
 {
-    [DataContract()]
     public class ChatViewModel
     {
         /// <summary>
         /// Id of Message 
         /// </summary>
-        [DataMember(Name = "id")]
+        [JsonPropertyName("id")]
         public int Id { get; set; }
 
         /// <summary>
         /// Message body
         /// </summary>
-        [DataMember(Name = "message")]
+        [JsonPropertyName("message")]
         public string Message { get; set; }
 
         /// <summary>
         /// Time Of Message
         /// </summary>
-        [DataMember(Name = "time")]
+        [JsonPropertyName("time")]
         public DateTime Time { get; set; }
     }
 }
