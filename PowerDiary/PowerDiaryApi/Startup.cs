@@ -14,6 +14,7 @@ using AutoMapper;
 using Microsoft.EntityFrameworkCore;
 using PowerDiaryApi.AutoMapperConfig;
 using PowerDiaryBusiness;
+using PowerDiaryBusiness.MessagesFormatter;
 using PowerDiaryDataAccess.DataAccess;
 using PowerDiaryDataAccess.DatabaseModel;
 
@@ -28,10 +29,8 @@ namespace PowerDiaryApi
 
         public IConfiguration Configuration { get; }
 
-        // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            // Auto Mapper Configurations
             var mapperConfig = new MapperConfiguration(mc =>
             {
                 mc.AddProfile(new MappingProfile());
@@ -46,21 +45,21 @@ namespace PowerDiaryApi
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "PowerDiaryApi", Version = "v1" });
             });
 
-            services.AddSingleton<IPowerDiaryBusiness, PowerDiaryBusiness.PowerDiaryBusiness>();
+            services.AddTransient<IEventFormatter, EventFormatter>();
+            services.AddSingleton<IChatBusiness, PowerDiaryBusiness.ChatBusiness>();
             services.AddSingleton<IChatRepository, ChatRepository>();
             services.AddSingleton<IUserRepository, UserRepository>();
 
             services.AddSingleton(option =>
             {
-                var contextOptions = new DbContextOptionsBuilder<PowerDiaryDbContext>()
+                var contextOptions = new DbContextOptionsBuilder<ChatDbContext>()
                     .UseInMemoryDatabase(databaseName: "PowerDiary")
                     .Options;
 
-                return new PowerDiaryDbContext(contextOptions);
+                return new ChatDbContext(contextOptions);
             });
         }
 
-        // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             if (env.IsDevelopment())

@@ -11,14 +11,8 @@ namespace PowerDiaryBusiness.BusinessViewModels
             ChatEvents = new List<string>();
         }
 
-        /// <summary>
-        /// Time Of Message
-        /// </summary>
         public DateTime Time { get; set; }
 
-        /// <summary>
-        /// List of Aggregated Events
-        /// </summary>
         public List<string> ChatEvents { get; set; }
     }
 }

@@ -8,8 +8,6 @@ using Microsoft.AspNetCore.Http;
 using PowerDiaryApi.ViewModels;
 using PowerDiaryBusiness;
 
-// For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-
 namespace PowerDiaryApi.Controllers
 {
     [Route("api/[controller]/[action]")]
@@ -17,43 +15,31 @@ namespace PowerDiaryApi.Controllers
     public class ChatController : ControllerBase
     {
 
-        private readonly IPowerDiaryBusiness _powerDiaryBusiness;
+        private readonly IChatBusiness _chatBusiness;
         private readonly IMapper _mapper;
 
-        public ChatController(IPowerDiaryBusiness powerDiaryBusiness, IMapper mapper)
+        public ChatController(IChatBusiness chatBusiness, IMapper mapper)
         {
-            _powerDiaryBusiness = powerDiaryBusiness;
+            _chatBusiness = chatBusiness;
             _mapper = mapper;
         }
 
-        // GET: api/<ChatController>
-        /// <summary>
-        /// Get minute by minute chat history 
-        /// </summary>
-        /// <param name="date"></param>
-        /// <returns></returns>
         [HttpGet]
         [Route("/api/[controller]/[action]/{date}")]
         public IActionResult GetDetailedChatData(DateTime date)
         {
-            var result = _powerDiaryBusiness.GetChatDetailedView(date);
+            var result = _chatBusiness.GetChatDetailedView(date);
             if (result.Status == ServiceResponseDtoStatus.Error)
                 return StatusCode(StatusCodes.Status500InternalServerError, result.FormattedMessage);
             var chatViewModel = _mapper.Map<List<ChatViewModel>>(result.Data);
             return Ok(chatViewModel);
         }
 
-        // GET: api/<ChatController>
-        /// <summary>
-        /// Get hourly aggregated chat history 
-        /// </summary>
-        /// <param name="date"></param>
-        /// <returns></returns>
         [HttpGet]
         [Route("/api/[controller]/[action]/{date}")]
         public IActionResult GetHourlyChatData(DateTime date)
         {
-            var result = _powerDiaryBusiness.GetChatsHourView(date);
+            var result = _chatBusiness.GetChatsHourView(date);
             if (result.Status == ServiceResponseDtoStatus.Error)
                 return StatusCode(StatusCodes.Status500InternalServerError, result.FormattedMessage);
             var hourlyChatViewModel = _mapper.Map<List<HourlyChatViewModel>>(result.Data);

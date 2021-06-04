@@ -7,24 +7,21 @@ namespace PowerDiaryBusiness.MessagesFormatter
 {
     public class Format
     {
-        private IEventMessageFormatterInterface _eventMessageFormatterInterface;
+        private readonly IEventMessageFormatter _eventMessageFormatter;
 
-        //Constructor: assigns strategy to interface  
-        public Format(IEventMessageFormatterInterface eventMessageFormatter)
+        public Format(IEventMessageFormatter eventMessageFormatter)
         {
-            _eventMessageFormatterInterface = eventMessageFormatter;
+            _eventMessageFormatter = eventMessageFormatter;
         }
 
-        //Executes the strategy  
         public string GetDetailedText(Chat chat)
         {
-            return _eventMessageFormatterInterface.GetDetailedText(chat);
+            return _eventMessageFormatter.GetDetailedText(chat);
         }
 
-        //Executes the strategy 
         public string GetHourlyText(List<Chat> chats)
         {
-            return _eventMessageFormatterInterface.GetHourlyText(chats);
+            return _eventMessageFormatter.GetHourlyText(chats);
         }
 
     }

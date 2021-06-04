@@ -8,10 +8,9 @@ namespace PowerDiaryDataAccess.DataAccess
 {
     public class UserRepository : GenericRepository<User>, IUserRepository
     {
-        private readonly IPowerDiaryDbContext _powerDiaryDbContext;
-        public UserRepository(PowerDiaryDbContext powerDiaryDbContext) : base(powerDiaryDbContext)
+        public UserRepository(ChatDbContext powerDiaryDbContext) : base(powerDiaryDbContext)
         {
-            _powerDiaryDbContext = powerDiaryDbContext;
+            
         }
     }
 }

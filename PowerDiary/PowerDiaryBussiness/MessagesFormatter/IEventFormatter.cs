@@ -5,10 +5,8 @@ using PowerDiaryDataAccess.Models;
 
 namespace PowerDiaryBusiness.MessagesFormatter
 {
-    public interface IEventMessageFormatterInterface
+    public interface IEventFormatter
     {
-        string GetDetailedText(Chat chat);
-
-        string GetHourlyText(List<Chat> chats);
+        IEventMessageFormatter CreateEventMessageFormatter(EventTypeEnum eventType);
     }
 }

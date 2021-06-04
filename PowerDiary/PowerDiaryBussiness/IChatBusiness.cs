@@ -5,7 +5,7 @@ using PowerDiaryBusiness.BusinessViewModels;
 
 namespace PowerDiaryBusiness
 {
-    public interface IPowerDiaryBusiness
+    public interface IChatBusiness
     {
         ServiceResponseDto<List<VrChat>> GetChatDetailedView(DateTime date);
 

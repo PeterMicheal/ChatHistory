@@ -12,11 +12,11 @@ namespace PowerDiaryDataAccess.DatabaseModel
 
         public static void Initialize(IServiceProvider serviceProvider)
         {
-            var options = new DbContextOptionsBuilder<PowerDiaryDbContext>()
+            var options = new DbContextOptionsBuilder<ChatDbContext>()
                 .UseInMemoryDatabase(databaseName: "PowerDiary")
                 .Options;
 
-            using (var context = new PowerDiaryDbContext(options))
+            using (var context = new ChatDbContext(options))
             {
                 var Users = new List<User>()
                 {

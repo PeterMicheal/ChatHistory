@@ -6,7 +6,7 @@ using PowerDiaryDataAccess.Models;
 
 namespace PowerDiaryBusiness.MessagesFormatter
 {
-    public class HighFiveFormatter : IEventMessageFormatterInterface
+    public class HighFiveFormatter : IEventMessageFormatter
     {
         public string GetDetailedText(Chat chat)
         {
@@ -15,10 +15,12 @@ namespace PowerDiaryBusiness.MessagesFormatter
 
         public string GetHourlyText(List<Chat> chats)
         {
-            var personFromValue = chats.Select(x => x.UserId).Distinct().Count() == 1 ? "person" : "people";
-            var personToValue = chats.Distinct().Count(c => c.UserToId != null) == 1 ? "person" : "people";
+            var personCount = chats.Select(x => x.UserId).Distinct().Count();
+            var personToCount = chats.Distinct().Count(c => c.UserToId != null);
+            var personFromValue = personCount == 1 ? "person" : "people";
+            var personToValue = personToCount == 1 ? "person" : "people";
 
-            return $"{ chats.Select(x => x.UserId).Distinct().Count() } { personFromValue } high - fived { chats.Distinct().Count(c => c.UserToId != null) } other { personToValue }";
+            return $"{ personCount } { personFromValue } high - fived { personToCount } other { personToValue }";
         }
     }
 }

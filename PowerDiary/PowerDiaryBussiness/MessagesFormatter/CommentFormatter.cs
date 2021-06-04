@@ -5,7 +5,7 @@ using PowerDiaryDataAccess.Models;
 
 namespace PowerDiaryBusiness.MessagesFormatter
 {
-    public class CommentFormatter : IEventMessageFormatterInterface
+    public class CommentFormatter : IEventMessageFormatter
     {
         public string GetDetailedText(Chat chat)
         {

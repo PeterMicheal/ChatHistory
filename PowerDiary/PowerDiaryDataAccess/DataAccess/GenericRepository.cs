@@ -10,9 +10,9 @@ namespace PowerDiaryDataAccess.DataAccess
 {
     public class GenericRepository<T> : IGenericRepository<T> where T : class
     {
-        protected PowerDiaryDbContext _context;
+        protected ChatDbContext _context;
 
-        public GenericRepository(PowerDiaryDbContext context)
+        public GenericRepository(ChatDbContext context)
         {
             _context = context;
         }

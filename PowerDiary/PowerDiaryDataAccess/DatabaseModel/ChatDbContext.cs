@@ -7,9 +7,9 @@ using PowerDiaryDataAccess.Models;
 
 namespace PowerDiaryDataAccess.DatabaseModel
 {
-    public class PowerDiaryDbContext : DbContext, IPowerDiaryDbContext
+    public class ChatDbContext : DbContext
     {
-        public PowerDiaryDbContext(DbContextOptions<PowerDiaryDbContext> options)
+        public ChatDbContext(DbContextOptions<ChatDbContext> options)
             : base(options)
         {
         }
@@ -21,11 +21,11 @@ namespace PowerDiaryDataAccess.DatabaseModel
                 .WithMany(t => t.Chats)
                 .HasForeignKey(m => m.UserId);
 
-                modelBuilder.Entity<Chat>()
-                    .HasOne(p => p.UserTo)
-                    .WithMany(t => t.ChatsTo)
-                    .HasForeignKey(m => m.UserToId)
-                    .IsRequired(false);
+            modelBuilder.Entity<Chat>()
+                .HasOne(p => p.UserTo)
+                .WithMany(t => t.ChatsTo)
+                .HasForeignKey(m => m.UserToId)
+                .IsRequired(false);
         }
 
         public DbSet<Chat> Chat { get; set; }

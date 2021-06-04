@@ -8,37 +8,12 @@ namespace PowerDiaryBusiness
     public enum ServiceResponseDtoStatus { Success = 1, Error = 0, AccessDenied = 2, NotFound = 3 }
     public class ServiceResponseDto<TInstance>
     {
-        /// <summary>
-        /// Gets or sets a value indicating whether this <see cref="ServiceResponseDto" /> is status.
-        /// 1 indicates success, 0 indicates fail
-        /// </summary>
-        /// <value>
-        /// The status.
-        /// </value>
         public ServiceResponseDtoStatus Status { get; set; }
 
-        /// <summary>
-        /// Gets or sets general message, can be null if not needed
-        /// </summary>
-        /// <value>
-        /// The message.
-        /// </value>
         public string Message { get; set; }
 
-        /// <summary>
-        /// Gets or sets the data.
-        /// </summary>
-        /// <value>
-        /// The data.
-        /// </value>
         public TInstance Data { get; set; }
 
-        /// <summary>
-        /// Gets or sets Error Messages. Can be null.
-        /// </summary>
-        /// <value>
-        /// The data.
-        /// </value>
         public IList<string> ErrorMessages { get; set; }
 
         public string FormattedMessage
@@ -57,12 +32,9 @@ namespace PowerDiaryBusiness
         }
     }
 
-    /// <summary>
-    /// Stands for service response
-    /// </summary>
-    public static class SR
+    public static class ServiceResponse
     {
-        public static ServiceResponseDto<T> Successfull<T>(this T instanse, string message = "Success")
+        public static ServiceResponseDto<T> Successful<T>(this T instanse, string message = "Success")
         {
             return new ServiceResponseDto<T>
             {
@@ -72,7 +44,7 @@ namespace PowerDiaryBusiness
             };
         }
 
-        public static ServiceResponseDto<T> Successfull<T>(string message)
+        public static ServiceResponseDto<T> Successful<T>(string message)
         {
             return new ServiceResponseDto<T>
             {
@@ -93,7 +65,6 @@ namespace PowerDiaryBusiness
         public static ServiceResponseDto<T> Failed<T>(string message,
             IList<string> errors = null)
         {
-            //logger.Error(message, DateTime.Now);
             return new ServiceResponseDto<T>
             {
                 ErrorMessages = errors,
@@ -121,16 +92,6 @@ namespace PowerDiaryBusiness
             };
         }
 
-
-        /// <summary>
-        /// Error response with the data, an error message, the error list and the function
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="data"></param>
-        /// <param name="message"></param>
-        /// <param name="errors"></param>
-        /// <param name="pFunction"></param>
-        /// <returns></returns>
         public static ServiceResponseDto<T> Failed<T>(this T data, string message,
             IList<string> errors = null, string pFunction = "")
         {
@@ -138,29 +99,19 @@ namespace PowerDiaryBusiness
             failedResult.Data = data;
             failedResult.Status = ServiceResponseDtoStatus.Error;
 
-            string ebiMessage = message;
+            string errorMessage = message;
             if (errors != null)
             {
                 foreach (var error in errors)
                 {
-                    ebiMessage += "\r\n" + error;
+                    errorMessage += "\r\n" + error;
                 }
             }
-            //logger.Error(ebiMessage, DateTime.Now);
             return failedResult;
         }
 
-        /// <summary>
-        /// Error response with the exception, and the function
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="e"></param>
-        /// <param name="pFunction"></param>
-        /// <returns></returns>
         public static ServiceResponseDto<T> Failed<T>(Exception e, string pFunction)
         {
-            //logger.Error(e);
-
             return new ServiceResponseDto<T>
             {
                 ErrorMessages = ExtractExceptionMessages(e),

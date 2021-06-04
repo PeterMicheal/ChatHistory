@@ -14,22 +14,19 @@ using PowerDiaryDataAccess.Models;
 
 namespace PowerDiaryBusiness
 {
-    public class PowerDiaryBusiness : IPowerDiaryBusiness
+    public class ChatBusiness : IChatBusiness
     {
         private readonly IChatRepository _chatRepository;
         private readonly IUserRepository _userRepository;
+        private readonly IEventFormatter _eventFormatter;
 
-        public PowerDiaryBusiness(IChatRepository chatRepository, IUserRepository userRepository) 
+        public ChatBusiness(IChatRepository chatRepository, IUserRepository userRepository, IEventFormatter eventFormatter) 
         {
             _chatRepository = chatRepository;
             _userRepository = userRepository;
+            _eventFormatter = eventFormatter;
         }
 
-        /// <summary>
-        /// Get Chat Detailed View model for selected date 
-        /// </summary>
-        /// <param name="date"></param>
-        /// <returns></returns>
         public ServiceResponseDto<List<VrChat>> GetChatDetailedView(DateTime date)
         {
             ServiceResponseDto<List<VrChat>> retVal = null;
@@ -45,24 +42,21 @@ namespace PowerDiaryBusiness
                     Select(c => new VrChat()
                     {
                         Id = c.Id, Time = c.Time,
-                        Message = $"{ GetDetailedMessage(c) }"
+
+                        // Message = _eventFormatter.CreateEventMessageFormatter(c.EventTypeId).GetDetailedText(c)
+                        Message = new Format(_eventFormatter.CreateEventMessageFormatter(c.EventTypeId)).GetDetailedText(c)
                     });
                     chatMessagesVm = chatMessages.ToList();
-                    retVal = SR.Successfull<List<VrChat>>(chatMessagesVm);
+                    retVal = ServiceResponse.Successful<List<VrChat>>(chatMessagesVm);
             }
             catch (Exception ex)
             {
-                retVal = SR.Failed<List<VrChat>>(ex, "GetChatDetailedView");
+                retVal = ServiceResponse.Failed<List<VrChat>>(ex, "GetChatDetailedView");
             }
                 
             return retVal;
         }
 
-        /// <summary>
-        /// Get Chats Hour View model for selected date
-        /// </summary>
-        /// <param name="date"></param>
-        /// <returns></returns>
         public ServiceResponseDto<List<VrHourlyChat>> GetChatsHourView(DateTime date)
         {
             ServiceResponseDto<List<VrHourlyChat>> retVal;
@@ -73,7 +67,6 @@ namespace PowerDiaryBusiness
 
                 var chatGroupedByHour = chats.AsEnumerable().GroupBy(x => x.Time.Hour);
                 
-                // for each every hour to get actions of hour 
                 foreach (var chatHour in chatGroupedByHour)
                 {
                     var hourlyChat = new VrHourlyChat();
@@ -83,28 +76,28 @@ namespace PowerDiaryBusiness
 
                     foreach (var eventChatHour in eventsChatHour)
                     {
-                        var eventDetails = $"{  GetHourlyMessage(eventChatHour.ToList())  }";
+                        //var eventDetails = _eventFormatter.CreateEventMessageFormatter(eventChatHour.Key)
+                        //    .GetHourlyText(eventChatHour.ToList());
+
+                        var eventDetails = new Format(_eventFormatter.CreateEventMessageFormatter(eventChatHour.Key))
+                            .GetHourlyText(eventChatHour.ToList());
+
                         hourlyChat.ChatEvents.Add(eventDetails);
                     }
 
                     hourlyChatList.Add(hourlyChat);
                 }
 
-                retVal = SR.Successfull<List<VrHourlyChat>>(hourlyChatList);
+                retVal = ServiceResponse.Successful<List<VrHourlyChat>>(hourlyChatList);
             }
             catch (Exception ex)
             {
-                retVal = SR.Failed<List<VrHourlyChat>>(ex, "GetChatsHourView");
+                retVal = ServiceResponse.Failed<List<VrHourlyChat>>(ex, "GetChatsHourView");
             }
 
             return retVal;
         }
 
-        /// <summary>
-        /// Get Chats for specific day and order by time  
-        /// </summary>
-        /// <param name="date"></param>
-        /// <returns></returns>
         private IOrderedQueryable<Chat> GetChatOrderedAndFilterByDate(DateTime date)
         {
             var chats = _chatRepository.GetAll();
@@ -116,41 +109,5 @@ namespace PowerDiaryBusiness
 
             return chatsWithConditionAndOrder;
         }
-
-        /// <summary>
-        /// Get Formatted message for Detailed view
-        /// </summary>
-        /// <param name="chat"></param>
-        /// <returns></returns>
-        private static string GetDetailedMessage(Chat chat)
-        {
-            switch (chat.EventTypeId)
-            {
-                case EventTypeEnum.Enter: return new Format(new EnteredFormatter()).GetDetailedText(chat);
-                case EventTypeEnum.Leave: return new Format(new LeaveFormatter()).GetDetailedText(chat);
-                case EventTypeEnum.Comment: return new Format(new CommentFormatter()).GetDetailedText(chat);
-                case EventTypeEnum.HighFive: return new Format(new HighFiveFormatter()).GetDetailedText(chat);
-                default: throw new ArgumentException("Invalid type", "type");
-            }
-        }
-
-        /// <summary>
-        /// Get Formatted message for Hourly view
-        /// </summary>
-        /// <param name="chats"></param>
-        /// <returns></returns>
-        private string GetHourlyMessage(List<Chat> chats)
-        {
-            switch (chats.First().EventTypeId)
-            {
-                case EventTypeEnum.Enter: return new Format(new EnteredFormatter()).GetHourlyText(chats);
-                case EventTypeEnum.Leave: return new Format(new LeaveFormatter()).GetHourlyText(chats);
-                case EventTypeEnum.Comment: return new Format(new CommentFormatter()).GetHourlyText(chats);
-                case EventTypeEnum.HighFive: return new Format(new HighFiveFormatter()).GetHourlyText(chats);
-                default: throw new ArgumentException("Invalid type", "type");
-            }
-        }
-
-
     }
 }
